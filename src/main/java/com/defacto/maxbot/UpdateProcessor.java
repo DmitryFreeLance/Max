@@ -14,7 +14,7 @@ public class UpdateProcessor {
   private final Config config;
   private final ObjectMapper mapper;
 
-  private static final String MENU_TAX = "Снизить налог / аренду (кадастр + перечень)";
+  private static final String MENU_TAX = "Снижение кадастровой стоимости";
   private static final String MENU_REPLAN = "Перепланировка";
   private static final String MENU_KAD = "Кадастровые работы";
   private static final String MENU_PRIREZ = "Прирезка земли";
