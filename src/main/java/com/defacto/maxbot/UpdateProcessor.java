@@ -689,7 +689,7 @@ public class UpdateProcessor {
     String t = s == null ? "" : s.trim().toLowerCase();
     t = t.replace("✅", "");
     t = t.replaceAll("[\\p{So}\\uFE0F\\u200D]", "");
-    t = t.replaceAll("\\s+", " ");
+    t = t.replaceAll("\\s+", " ").trim();
     return t;
   }
 
