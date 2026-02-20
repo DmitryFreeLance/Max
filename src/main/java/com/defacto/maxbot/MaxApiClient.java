@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +16,12 @@ public class MaxApiClient {
   private final String accessToken;
 
   public MaxApiClient(String baseUrl, String accessToken, ObjectMapper mapper) {
-    this.http = new OkHttpClient.Builder().build();
+    this.http = new OkHttpClient.Builder()
+        .connectTimeout(Duration.ofSeconds(10))
+        .readTimeout(Duration.ofSeconds(40))
+        .writeTimeout(Duration.ofSeconds(10))
+        .callTimeout(Duration.ofSeconds(45))
+        .build();
     this.mapper = mapper;
     this.baseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
     this.accessToken = accessToken;
