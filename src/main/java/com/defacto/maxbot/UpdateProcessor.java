@@ -592,16 +592,27 @@ public class UpdateProcessor {
         "Мы свяжемся с вами в ближайшее рабочее время (Пн–Пт 09:00–18:00).\n" +
         "Если удобно — можно написать юристу прямо сейчас или вернуться в меню.";
     List<List<Button>> buttons = new ArrayList<>();
+    boolean hasLink = false;
     if (config.operatorChatUrl != null && !config.operatorChatUrl.isBlank()) {
       String url = config.operatorChatUrl.trim();
-      if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("max://")) {
+      if (url.startsWith("http://") || url.startsWith("https://")) {
         buttons.add(List.of(Button.link("Написать юристу прямо сейчас", url)));
+        hasLink = true;
       } else {
-        System.err.println("[WARN] OPERATOR_CHAT_URL must be http(s) or max://. Skipping link button.");
+        System.err.println("[WARN] OPERATOR_CHAT_URL must be http/https. Skipping link button.");
       }
     }
     buttons.add(List.of(Button.message("⬅️ В меню")));
-    client.sendMessage(userId, text, buttons.isEmpty() ? null : buttons);
+    try {
+      client.sendMessage(userId, text, buttons.isEmpty() ? null : buttons);
+    } catch (IOException e) {
+      if (hasLink) {
+        System.err.println("[WARN] Lead confirm failed with link button, retrying without link: " + e.getMessage());
+        client.sendMessage(userId, text, List.of(List.of(Button.message("⬅️ В меню"))));
+        return;
+      }
+      throw e;
+    }
   }
 
   private void notifyOperator(Conversation c) throws IOException {

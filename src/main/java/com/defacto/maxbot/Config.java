@@ -46,10 +46,6 @@ public class Config {
     String webhookSecret = getenv("WEBHOOK_SECRET", "");
     int port = Integer.parseInt(getenv("PORT", "8080"));
 
-    if (operatorChatUrl.isBlank() && !operatorUserId.isBlank()) {
-      operatorChatUrl = "max://user/" + operatorUserId;
-    }
-
     return new Config(
         accessToken,
         apiBase,
