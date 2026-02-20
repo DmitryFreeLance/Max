@@ -448,7 +448,8 @@ public class UpdateProcessor {
 
   private void sendMainMenu(long userId) throws IOException {
     String text = "Здравствуйте! Юрцентр «Де-факто» (Ставрополь).\n" +
-        "Подскажите, чем помочь? Выберите тему — 2–3 шага, и юрист свяжется с вами.";
+        "Подскажите, с каким вопросом помочь? Обычно достаточно 2–3 шагов, и юрист свяжется с вами.\n" +
+        "Если хотите — нажмите «Связаться с юристом».";
     List<List<Button>> buttons = new ArrayList<>();
     buttons.add(List.of(Button.message("💰 " + MENU_TAX)));
     buttons.add(List.of(Button.message("🏗️ " + MENU_REPLAN)));
@@ -457,12 +458,13 @@ public class UpdateProcessor {
     buttons.add(List.of(Button.message("🏠 " + MENU_BUILD)));
     buttons.add(List.of(Button.message("🧭 " + MENU_LAND)));
     buttons.add(List.of(Button.message("🏢 " + MENU_CONST)));
-    buttons.add(List.of(Button.message("✅ " + MENU_CONTACT.replace("✅ ", ""))));
+    buttons.add(List.of(Button.message("👨‍⚖️ Связаться с юристом")));
     client.sendMessage(userId, text, buttons);
   }
 
   private void sendReplan1(long userId) throws IOException {
-    String text = "Перепланировка. Какое помещение вас интересует?";
+    String text = "Перепланировка. Какое помещение вас интересует?\n" +
+        "Это поможет сразу передать юристу контекст.";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("🏠 Жилое"), Button.message("🏢 Нежилое"))
@@ -472,7 +474,8 @@ public class UpdateProcessor {
   }
 
   private void sendReplan2(long userId) throws IOException {
-    String text = "Где находится объект?";
+    String text = "Где находится объект?\n" +
+        "Если не Ставрополь — выберите «Другой город».";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("📍 Ставрополь"), Button.message("🌍 Другой город"))
@@ -482,7 +485,8 @@ public class UpdateProcessor {
   }
 
   private void sendKad1(long userId) throws IOException {
-    String text = "Кадастровые работы. Что требуется?";
+    String text = "Кадастровые работы. Что нужно сделать?\n" +
+        "Выберите подходящий вариант.";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("📏 Межевание земли")),
@@ -493,7 +497,8 @@ public class UpdateProcessor {
   }
 
   private void sendPrirez1(long userId) throws IOException {
-    String text = "Прирезка земли. Назначение участка?";
+    String text = "Прирезка земли. Назначение участка?\n" +
+        "Это влияет на порядок оформления.";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("🏡 ИЖС"), Button.message("🌿 Садоводство")),
@@ -506,12 +511,14 @@ public class UpdateProcessor {
 
   private void sendTax1(long userId) throws IOException {
     String text = "Снижение платежей по недвижимости/земле.\n" +
-        "Укажите кадастровый номер (если несколько — через запятую) или адрес.";
+        "Укажите кадастровый номер (если несколько — через запятую) или адрес объекта.\n" +
+        "Если номера нет — напишите адрес.";
     client.sendMessage(userId, text, withContactButton(List.of()));
   }
 
   private void sendBuild1(long userId) throws IOException {
-    String text = "Что нужно оформить?";
+    String text = "Оформление/реконструкция. Что нужно оформить?\n" +
+        "Выберите вариант.";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("🏠 Жилой дом — реконструкция")),
@@ -528,7 +535,8 @@ public class UpdateProcessor {
   }
 
   private void sendConst1(long userId) throws IOException {
-    String text = "Споры в строительстве. Ваша роль?";
+    String text = "Споры в строительстве. Ваша роль в проекте?\n" +
+        "Это поможет определить стратегию.";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("👤 Заказчик"), Button.message("🛠️ Подрядчик")),
@@ -539,7 +547,8 @@ public class UpdateProcessor {
   }
 
   private void sendConst2(long userId) throws IOException {
-    String text = "Что случилось?";
+    String text = "Что случилось?\n" +
+        "Выберите наиболее подходящий вариант.";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("💸 Не оплатили / удерживают оплату")),
@@ -559,13 +568,15 @@ public class UpdateProcessor {
     store.upsertConversation(c);
     String text = "Чтобы юрист подсказал по вашему случаю, оставьте номер телефона.\n" +
         "Мы на связи Пн–Пт 09:00–18:00.\n" +
+        "Номер используется только для связи по вашему обращению.\n" +
         "Отправляя номер, вы соглашаетесь на обработку персональных данных.";
     List<List<Button>> buttons = List.of(List.of(Button.message("📞 Оставить номер")));
     client.sendMessage(c.userId, text, buttons);
   }
 
   private void sendLeadTime(long userId) throws IOException {
-    String text = "Когда удобнее связаться?";
+    String text = "Когда удобнее связаться?\n" +
+        "Выберите удобный интервал.";
     List<List<Button>> buttons = List.of(
         List.of(Button.message("🌅 Утром (09:00–12:00)")),
         List.of(Button.message("🌞 Днём (12:00–15:00)")),
@@ -577,10 +588,16 @@ public class UpdateProcessor {
 
   private void sendLeadConfirm(long userId) throws IOException {
     String text = "Спасибо! Заявка принята ✅\n" +
-        "Мы свяжемся с вами в ближайшее рабочее время (Пн–Пт 09:00–18:00).";
+        "Мы свяжемся с вами в ближайшее рабочее время (Пн–Пт 09:00–18:00).\n" +
+        "Если удобно — можно написать юристу прямо сейчас.";
     List<List<Button>> buttons = new ArrayList<>();
     if (config.operatorChatUrl != null && !config.operatorChatUrl.isBlank()) {
-      buttons.add(List.of(Button.link("Написать юристу прямо сейчас", config.operatorChatUrl)));
+      String url = config.operatorChatUrl.trim();
+      if (url.startsWith("http://") || url.startsWith("https://")) {
+        buttons.add(List.of(Button.link("Написать юристу прямо сейчас", url)));
+      } else {
+        System.err.println("[WARN] OPERATOR_CHAT_URL must be http(s). Skipping link button.");
+      }
     }
     client.sendMessage(userId, text, buttons.isEmpty() ? null : buttons);
   }

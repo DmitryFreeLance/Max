@@ -69,7 +69,8 @@ public class MaxApiClient {
 
     try (Response resp = http.newCall(request).execute()) {
       if (!resp.isSuccessful()) {
-        throw new IOException("POST /messages failed: " + resp.code());
+        String err = resp.body() == null ? "" : resp.body().string();
+        throw new IOException("POST /messages failed: " + resp.code() + " " + err);
       }
     }
   }
