@@ -22,6 +22,7 @@ public class UpdateProcessor {
   private static final String MENU_LAND = "Земельные споры";
   private static final String MENU_CONST = "Споры в строительстве (для бизнеса)";
   private static final String MENU_CONTACT = "✅ Связаться с юристом";
+  private static final String DATA_LAST_MENU_AT = "last_menu_at";
 
   public UpdateProcessor(MaxApiClient client, ConversationStore store, Config config, ObjectMapper mapper) {
     this.client = client;
@@ -35,9 +36,12 @@ public class UpdateProcessor {
     if ("bot_started".equals(type)) {
       long userId = update.path("user").path("user_id").asLong(0);
       if (userId != 0) {
-        sendMainMenu(userId);
         Conversation c = store.getConversation(userId);
+        if (!recentlySentMenu(c)) {
+          sendMainMenu(c.userId);
+        }
         store.resetConversation(c);
+        markMenuSent(c);
       }
       return;
     }
@@ -98,9 +102,12 @@ public class UpdateProcessor {
   private void handleText(long userId, String text) throws IOException {
     String normalized = normalize(text);
     if (isMenuCommand(normalized)) {
-      sendMainMenu(userId);
       Conversation c = store.getConversation(userId);
+      if (!recentlySentMenu(c)) {
+        sendMainMenu(c.userId);
+      }
       store.resetConversation(c);
+      markMenuSent(c);
       return;
     }
 
@@ -225,6 +232,10 @@ public class UpdateProcessor {
   }
 
   private void handleReplanCity(Conversation c, String text) throws IOException {
+    if (isMainMenuSelection(normalize(text))) {
+      sendTextWithContact(c.userId, "Напишите город/район одной строкой.");
+      return;
+    }
     if (text.isBlank()) {
       sendTextWithContact(c.userId, "Напишите город/район одной строкой.");
       return;
@@ -261,6 +272,10 @@ public class UpdateProcessor {
   }
 
   private void handlePrirez2(Conversation c, String text) throws IOException {
+    if (isMainMenuSelection(normalize(text))) {
+      sendTextWithContact(c.userId, "Укажите населённый пункт одной строкой.");
+      return;
+    }
     if (text.isBlank()) {
       sendTextWithContact(c.userId, "Укажите населённый пункт одной строкой.");
       return;
@@ -271,6 +286,10 @@ public class UpdateProcessor {
   }
 
   private void handleTax1(Conversation c, String text) throws IOException {
+    if (isMainMenuSelection(normalize(text))) {
+      sendTax1(c.userId);
+      return;
+    }
     if (text.isBlank()) {
       sendTax1(c.userId);
       return;
@@ -297,6 +316,10 @@ public class UpdateProcessor {
   }
 
   private void handleBuild2(Conversation c, String text) throws IOException {
+    if (isMainMenuSelection(normalize(text))) {
+      sendTextWithContact(c.userId, "Населённый пункт (одной строкой)");
+      return;
+    }
     if (text.isBlank()) {
       sendTextWithContact(c.userId, "Населённый пункт (одной строкой)");
       return;
@@ -307,6 +330,10 @@ public class UpdateProcessor {
   }
 
   private void handleLand1(Conversation c, String text) throws IOException {
+    if (isMainMenuSelection(normalize(text))) {
+      sendTextWithContact(c.userId, "Населённый пункт (одной строкой)");
+      return;
+    }
     if (text.isBlank()) {
       sendTextWithContact(c.userId, "Населённый пункт (одной строкой)");
       return;
@@ -318,6 +345,10 @@ public class UpdateProcessor {
   }
 
   private void handleLand2(Conversation c, String text) throws IOException {
+    if (isMainMenuSelection(normalize(text))) {
+      sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения)");
+      return;
+    }
     if (text.isBlank()) {
       sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения)");
       return;
@@ -363,6 +394,10 @@ public class UpdateProcessor {
   }
 
   private void handleConstIssue(Conversation c, String text) throws IOException {
+    if (isMainMenuSelection(normalize(text))) {
+      sendTextWithContact(c.userId, "Коротко опишите проблему одной строкой.");
+      return;
+    }
     if (text.isBlank()) {
       sendTextWithContact(c.userId, "Коротко опишите проблему одной строкой.");
       return;
@@ -628,6 +663,18 @@ public class UpdateProcessor {
     return equalsAny(normalized, "/start", "меню", "главное меню");
   }
 
+  private boolean isMainMenuSelection(String normalized) {
+    return equalsAny(normalized,
+        MENU_TAX,
+        MENU_REPLAN,
+        MENU_KAD,
+        MENU_PRIREZ,
+        MENU_BUILD,
+        MENU_LAND,
+        MENU_CONST
+    );
+  }
+
   private boolean isContactShortcut(String normalized) {
     return equalsAny(normalized, "связаться с юристом", "✅ связаться с юристом");
   }
@@ -642,8 +689,24 @@ public class UpdateProcessor {
   private String normalize(String s) {
     String t = s == null ? "" : s.trim().toLowerCase();
     t = t.replace("✅", "");
-    t = t.replaceAll("\s+", " ");
+    t = t.replaceAll("\\s+", " ");
     return t;
+  }
+
+  private void markMenuSent(Conversation c) {
+    c.data.put(DATA_LAST_MENU_AT, String.valueOf(System.currentTimeMillis()));
+    store.upsertConversation(c);
+  }
+
+  private boolean recentlySentMenu(Conversation c) {
+    String raw = c.data.get(DATA_LAST_MENU_AT);
+    if (raw == null || raw.isBlank()) return false;
+    try {
+      long last = Long.parseLong(raw);
+      return System.currentTimeMillis() - last < 5000;
+    } catch (NumberFormatException e) {
+      return false;
+    }
   }
 
   private String value(Map<String, String> data, String key) {
