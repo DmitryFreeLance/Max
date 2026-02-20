@@ -21,7 +21,7 @@ public class UpdateProcessor {
   private static final String MENU_BUILD = "Оформить дом / реконструкцию";
   private static final String MENU_LAND = "Земельные споры";
   private static final String MENU_CONST = "Споры в строительстве (для бизнеса)";
-  private static final String MENU_CONTACT = "✅ Связаться с юристом";
+  private static final String MENU_CONTACT = "Связаться с юристом";
   private static final String DATA_LAST_MENU_AT = "last_menu_at";
 
   public UpdateProcessor(MaxApiClient client, ConversationStore store, Config config, ObjectMapper mapper) {
@@ -225,7 +225,7 @@ public class UpdateProcessor {
     if (equalsAny(normalized, "Другой город")) {
       c.state = Conversation.State.REPLAN_CITY;
       store.upsertConversation(c);
-      sendTextWithContact(c.userId, "Укажите город/район одной строкой.");
+      sendTextWithContact(c.userId, "Укажите город/район (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     sendReplan2(c.userId);
@@ -233,11 +233,11 @@ public class UpdateProcessor {
 
   private void handleReplanCity(Conversation c, String text) throws IOException {
     if (isMainMenuSelection(normalize(text))) {
-      sendTextWithContact(c.userId, "Укажите город/район одной строкой.");
+      sendTextWithContact(c.userId, "Укажите город/район (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     if (text.isBlank()) {
-      sendTextWithContact(c.userId, "Укажите город/район (одной строкой).");
+      sendTextWithContact(c.userId, "Укажите город/район (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     c.data.put("replan_city", text.trim());
@@ -265,7 +265,7 @@ public class UpdateProcessor {
       c.data.put("prirez_purpose", text.trim());
       c.state = Conversation.State.PRIREZ_2;
       store.upsertConversation(c);
-      sendTextWithContact(c.userId, "Укажите населённый пункт (например: Ставрополь, Михайловск).");
+      sendTextWithContact(c.userId, "Укажите населённый пункт.\nНапример: Ставрополь, Михайловск.");
       return;
     }
     sendPrirez1(c.userId);
@@ -273,11 +273,11 @@ public class UpdateProcessor {
 
   private void handlePrirez2(Conversation c, String text) throws IOException {
     if (isMainMenuSelection(normalize(text))) {
-      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).");
+      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     if (text.isBlank()) {
-      sendTextWithContact(c.userId, "Укажите населённый пункт одной строкой.");
+      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     c.data.put("prirez_settlement", text.trim());
@@ -309,7 +309,7 @@ public class UpdateProcessor {
       c.data.put("build_type", text.trim());
       c.state = Conversation.State.BUILD_2;
       store.upsertConversation(c);
-      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).");
+      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     sendBuild1(c.userId);
@@ -317,11 +317,11 @@ public class UpdateProcessor {
 
   private void handleBuild2(Conversation c, String text) throws IOException {
     if (isMainMenuSelection(normalize(text))) {
-      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).");
+      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     if (text.isBlank()) {
-      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).");
+      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     c.data.put("build_settlement", text.trim());
@@ -331,26 +331,26 @@ public class UpdateProcessor {
 
   private void handleLand1(Conversation c, String text) throws IOException {
     if (isMainMenuSelection(normalize(text))) {
-      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).");
+      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     if (text.isBlank()) {
-      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).");
+      sendTextWithContact(c.userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
       return;
     }
     c.data.put("land_settlement", text.trim());
     c.state = Conversation.State.LAND_2;
     store.upsertConversation(c);
-    sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения).");
+    sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения).\nЭто поможет понять суть спора.");
   }
 
   private void handleLand2(Conversation c, String text) throws IOException {
     if (isMainMenuSelection(normalize(text))) {
-      sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения).");
+      sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения).\nЭто поможет понять суть спора.");
       return;
     }
     if (text.isBlank()) {
-      sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения).");
+      sendTextWithContact(c.userId, "Кратко опишите ситуацию (1–2 предложения).\nЭто поможет понять суть спора.");
       return;
     }
     c.data.put("land_desc", text.trim());
@@ -387,7 +387,7 @@ public class UpdateProcessor {
     if (equalsAny(normalized, "Другое (напишу)")) {
       c.state = Conversation.State.CONST_ISSUE;
       store.upsertConversation(c);
-      sendTextWithContact(c.userId, "Коротко опишите проблему одной строкой.");
+      sendTextWithContact(c.userId, "Коротко опишите проблему (одной строкой).\nНапример: «Не оплатили работы по договору».");
       return;
     }
     sendConst2(c.userId);
@@ -395,11 +395,11 @@ public class UpdateProcessor {
 
   private void handleConstIssue(Conversation c, String text) throws IOException {
     if (isMainMenuSelection(normalize(text))) {
-      sendTextWithContact(c.userId, "Коротко опишите проблему одной строкой.");
+      sendTextWithContact(c.userId, "Коротко опишите проблему (одной строкой).\nНапример: «Не оплатили работы по договору».");
       return;
     }
     if (text.isBlank()) {
-      sendTextWithContact(c.userId, "Коротко опишите проблему одной строкой.");
+      sendTextWithContact(c.userId, "Коротко опишите проблему (одной строкой).\nНапример: «Не оплатили работы по договору».");
       return;
     }
     c.data.put("const_issue", text.trim());
@@ -412,12 +412,12 @@ public class UpdateProcessor {
     if (equalsAny(normalized, "Оставить номер")) {
       c.state = Conversation.State.LEAD_PHONE_INPUT;
       store.upsertConversation(c);
-      client.sendMessage(c.userId, "Введите номер в формате +7…");
+      client.sendMessage(c.userId, "Пожалуйста, введите номер в формате +7…\nНапример: +7 900 123-45-67");
       return;
     }
     String phone = extractPhone(text);
     if (phone == null) {
-      client.sendMessage(c.userId, "Введите номер в формате +7…");
+      client.sendMessage(c.userId, "Пожалуйста, введите номер в формате +7…\nНапример: +7 900 123-45-67");
       c.state = Conversation.State.LEAD_PHONE_INPUT;
       store.upsertConversation(c);
       return;
@@ -438,7 +438,7 @@ public class UpdateProcessor {
       sendLeadTime(c.userId);
       return;
     }
-    c.timePref = text.trim();
+    c.timePref = cleanLabel(text);
     c.topic = buildTopic(c);
     store.saveLead(c);
     sendLeadConfirm(c.userId);
@@ -448,8 +448,9 @@ public class UpdateProcessor {
 
   private void sendMainMenu(long userId) throws IOException {
     String text = "Здравствуйте! Юрцентр «Де-факто» (Ставрополь).\n" +
-        "Подскажите, с каким вопросом помочь? Обычно достаточно 2–3 шагов, и юрист свяжется с вами.\n" +
-        "Если хотите — нажмите «Связаться с юристом».";
+        "Подскажите, с каким вопросом помочь?\n" +
+        "Обычно достаточно 2–3 шагов, и юрист свяжется с вами.\n" +
+        "Если нужно сразу — нажмите «Связаться с юристом».";
     List<List<Button>> buttons = new ArrayList<>();
     buttons.add(List.of(Button.message("💰 " + MENU_TAX)));
     buttons.add(List.of(Button.message("🏗️ " + MENU_REPLAN)));
@@ -458,13 +459,13 @@ public class UpdateProcessor {
     buttons.add(List.of(Button.message("🏠 " + MENU_BUILD)));
     buttons.add(List.of(Button.message("🧭 " + MENU_LAND)));
     buttons.add(List.of(Button.message("🏢 " + MENU_CONST)));
-    buttons.add(List.of(Button.message("👨‍⚖️ Связаться с юристом")));
+    buttons.add(List.of(Button.message("👨‍⚖️ " + MENU_CONTACT)));
     client.sendMessage(userId, text, buttons);
   }
 
   private void sendReplan1(long userId) throws IOException {
-    String text = "Перепланировка. Какое помещение вас интересует?\n" +
-        "Это поможет сразу передать юристу контекст.";
+    String text = "Перепланировка.\n" +
+        "Какое помещение вас интересует?";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("🏠 Жилое"), Button.message("🏢 Нежилое"))
@@ -485,8 +486,8 @@ public class UpdateProcessor {
   }
 
   private void sendKad1(long userId) throws IOException {
-    String text = "Кадастровые работы. Что нужно сделать?\n" +
-        "Выберите подходящий вариант.";
+    String text = "Кадастровые работы.\n" +
+        "Что нужно сделать?";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("📏 Межевание земли")),
@@ -497,8 +498,8 @@ public class UpdateProcessor {
   }
 
   private void sendPrirez1(long userId) throws IOException {
-    String text = "Прирезка земли. Назначение участка?\n" +
-        "Это влияет на порядок оформления.";
+    String text = "Прирезка земли.\n" +
+        "Назначение участка?";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("🏡 ИЖС"), Button.message("🌿 Садоводство")),
@@ -511,14 +512,14 @@ public class UpdateProcessor {
 
   private void sendTax1(long userId) throws IOException {
     String text = "Снижение платежей по недвижимости/земле.\n" +
-        "Укажите кадастровый номер (если несколько — через запятую) или адрес объекта.\n" +
-        "Если номера нет — напишите адрес.";
+        "Укажите кадастровый номер (если несколько — через запятую)\n" +
+        "или адрес объекта.";
     client.sendMessage(userId, text, withContactButton(List.of()));
   }
 
   private void sendBuild1(long userId) throws IOException {
-    String text = "Оформление/реконструкция. Что нужно оформить?\n" +
-        "Выберите вариант.";
+    String text = "Оформление/реконструкция.\n" +
+        "Что нужно оформить?";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("🏠 Жилой дом — реконструкция")),
@@ -531,12 +532,12 @@ public class UpdateProcessor {
   }
 
   private void sendLand1(long userId) throws IOException {
-    sendTextWithContact(userId, "Укажите населённый пункт (одной строкой).");
+    sendTextWithContact(userId, "Укажите населённый пункт (одной строкой).\nНапример: Ставрополь.");
   }
 
   private void sendConst1(long userId) throws IOException {
-    String text = "Споры в строительстве. Ваша роль в проекте?\n" +
-        "Это поможет определить стратегию.";
+    String text = "Споры в строительстве.\n" +
+        "Ваша роль в проекте?";
     List<List<Button>> buttons = withContactButton(
         List.of(
             List.of(Button.message("👤 Заказчик"), Button.message("🛠️ Подрядчик")),
@@ -576,7 +577,7 @@ public class UpdateProcessor {
 
   private void sendLeadTime(long userId) throws IOException {
     String text = "Когда удобнее связаться?\n" +
-        "Выберите удобный интервал.";
+        "Выберите подходящий интервал.";
     List<List<Button>> buttons = List.of(
         List.of(Button.message("🌅 Утром (09:00–12:00)")),
         List.of(Button.message("🌞 Днём (12:00–15:00)")),
@@ -589,16 +590,17 @@ public class UpdateProcessor {
   private void sendLeadConfirm(long userId) throws IOException {
     String text = "Спасибо! Заявка принята ✅\n" +
         "Мы свяжемся с вами в ближайшее рабочее время (Пн–Пт 09:00–18:00).\n" +
-        "Если удобно — можно написать юристу прямо сейчас.";
+        "Если удобно — можно написать юристу прямо сейчас или вернуться в меню.";
     List<List<Button>> buttons = new ArrayList<>();
     if (config.operatorChatUrl != null && !config.operatorChatUrl.isBlank()) {
       String url = config.operatorChatUrl.trim();
-      if (url.startsWith("http://") || url.startsWith("https://")) {
+      if (url.startsWith("http://") || url.startsWith("https://") || url.startsWith("max://")) {
         buttons.add(List.of(Button.link("Написать юристу прямо сейчас", url)));
       } else {
-        System.err.println("[WARN] OPERATOR_CHAT_URL must be http(s). Skipping link button.");
+        System.err.println("[WARN] OPERATOR_CHAT_URL must be http(s) or max://. Skipping link button.");
       }
     }
+    buttons.add(List.of(Button.message("⬅️ В меню")));
     client.sendMessage(userId, text, buttons.isEmpty() ? null : buttons);
   }
 
@@ -606,10 +608,11 @@ public class UpdateProcessor {
     long operatorId = Long.parseLong(config.operatorUserId);
     String topic = buildTopic(c);
     String details = buildDetails(c.data);
-    String serviceLine = "[ЗАЯВКА] Тема: " + topic +
-        " • Тел: " + c.phone +
-        " • Время: " + c.timePref +
-        " • Данные: " + details;
+    String serviceLine = "[ЗАЯВКА]\n" +
+        "📌 Тема: " + topic + "\n" +
+        "📞 Телефон: " + c.phone + "\n" +
+        "🕒 Время: " + c.timePref + "\n" +
+        "🗂 Данные:\n" + details;
     client.sendMessage(operatorId, serviceLine);
   }
 
@@ -637,27 +640,27 @@ public class UpdateProcessor {
 
   private String buildDetails(Map<String, String> data) {
     List<String> parts = new ArrayList<>();
-    if (data.containsKey("replan_type")) parts.add("Помещение: " + data.get("replan_type"));
-    if (data.containsKey("replan_city")) parts.add("Город: " + data.get("replan_city"));
-    if (data.containsKey("kad_type")) parts.add("Кадастр: " + data.get("kad_type"));
-    if (data.containsKey("prirez_purpose")) parts.add("Назначение: " + data.get("prirez_purpose"));
-    if (data.containsKey("prirez_settlement")) parts.add("Н.п.: " + data.get("prirez_settlement"));
-    if (data.containsKey("tax_input")) parts.add("Кадастр/адрес: " + data.get("tax_input"));
-    if (data.containsKey("build_type")) parts.add("Тип: " + data.get("build_type"));
-    if (data.containsKey("build_settlement")) parts.add("Н.п.: " + data.get("build_settlement"));
-    if (data.containsKey("land_settlement")) parts.add("Н.п.: " + data.get("land_settlement"));
-    if (data.containsKey("land_desc")) parts.add("Ситуация: " + data.get("land_desc"));
-    if (data.containsKey("const_role")) parts.add("Роль: " + data.get("const_role"));
-    if (data.containsKey("const_issue")) parts.add("Проблема: " + data.get("const_issue"));
+    if (data.containsKey("replan_type")) parts.add("• Помещение: " + data.get("replan_type"));
+    if (data.containsKey("replan_city")) parts.add("• Город: " + data.get("replan_city"));
+    if (data.containsKey("kad_type")) parts.add("• Кадастр: " + data.get("kad_type"));
+    if (data.containsKey("prirez_purpose")) parts.add("• Назначение: " + data.get("prirez_purpose"));
+    if (data.containsKey("prirez_settlement")) parts.add("• Нас. пункт: " + data.get("prirez_settlement"));
+    if (data.containsKey("tax_input")) parts.add("• Кадастр/адрес: " + data.get("tax_input"));
+    if (data.containsKey("build_type")) parts.add("• Тип: " + data.get("build_type"));
+    if (data.containsKey("build_settlement")) parts.add("• Нас. пункт: " + data.get("build_settlement"));
+    if (data.containsKey("land_settlement")) parts.add("• Нас. пункт: " + data.get("land_settlement"));
+    if (data.containsKey("land_desc")) parts.add("• Ситуация: " + data.get("land_desc"));
+    if (data.containsKey("const_role")) parts.add("• Роль: " + data.get("const_role"));
+    if (data.containsKey("const_issue")) parts.add("• Проблема: " + data.get("const_issue"));
     if (parts.isEmpty()) {
-      return "—";
+      return "• —";
     }
-    return String.join("; ", parts);
+    return String.join("\n", parts);
   }
 
   private List<List<Button>> withContactButton(List<List<Button>> rows) {
     List<List<Button>> result = new ArrayList<>(rows);
-    result.add(List.of(Button.message(MENU_CONTACT)));
+    result.add(List.of(Button.message("👨‍⚖️ " + MENU_CONTACT)));
     return result;
   }
 
@@ -676,7 +679,7 @@ public class UpdateProcessor {
   }
 
   private boolean isMenuCommand(String normalized) {
-    return equalsAny(normalized, "/start", "меню", "главное меню");
+    return equalsAny(normalized, "/start", "меню", "главное меню", "в меню");
   }
 
   private boolean isMainMenuSelection(String normalized) {
@@ -692,7 +695,7 @@ public class UpdateProcessor {
   }
 
   private boolean isContactShortcut(String normalized) {
-    return equalsAny(normalized, "связаться с юристом", "✅ связаться с юристом");
+    return equalsAny(normalized, "связаться с юристом");
   }
 
   private boolean equalsAny(String normalized, String... options) {
@@ -705,6 +708,13 @@ public class UpdateProcessor {
   private String normalize(String s) {
     String t = s == null ? "" : s.trim().toLowerCase();
     t = t.replace("✅", "");
+    t = t.replaceAll("[\\p{So}\\uFE0F\\u200D]", "");
+    t = t.replaceAll("\\s+", " ").trim();
+    return t;
+  }
+
+  private String cleanLabel(String s) {
+    String t = s == null ? "" : s.trim();
     t = t.replaceAll("[\\p{So}\\uFE0F\\u200D]", "");
     t = t.replaceAll("\\s+", " ").trim();
     return t;
