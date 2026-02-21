@@ -75,6 +75,28 @@ public class MaxApiClient {
     }
   }
 
+  public void sendMessage(long userId, String text, List<List<Button>> buttons, String format) throws IOException {
+    HttpUrl url = HttpUrl.parse(baseUrl + "/messages").newBuilder()
+        .addQueryParameter("user_id", String.valueOf(userId))
+        .build();
+
+    Map<String, Object> body = MessageBuilder.textWithKeyboard(text, buttons, format);
+    String json = mapper.writeValueAsString(body);
+
+    Request request = new Request.Builder()
+        .url(url)
+        .post(RequestBody.create(json, MediaType.parse("application/json")))
+        .header("Authorization", accessToken)
+        .build();
+
+    try (Response resp = http.newCall(request).execute()) {
+      if (!resp.isSuccessful()) {
+        String err = resp.body() == null ? "" : resp.body().string();
+        throw new IOException("POST /messages failed: " + resp.code() + " " + err);
+      }
+    }
+  }
+
   public void sendMessage(long userId, String text) throws IOException {
     sendMessage(userId, text, null);
   }

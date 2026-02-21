@@ -9,8 +9,15 @@ public class MessageBuilder {
   private MessageBuilder() {}
 
   public static Map<String, Object> textWithKeyboard(String text, List<List<Button>> buttons) {
+    return textWithKeyboard(text, buttons, null);
+  }
+
+  public static Map<String, Object> textWithKeyboard(String text, List<List<Button>> buttons, String format) {
     Map<String, Object> body = new LinkedHashMap<>();
     body.put("text", text);
+    if (format != null && !format.isBlank()) {
+      body.put("format", format);
+    }
     if (buttons != null && !buttons.isEmpty()) {
       body.put("attachments", List.of(inlineKeyboard(buttons)));
     }

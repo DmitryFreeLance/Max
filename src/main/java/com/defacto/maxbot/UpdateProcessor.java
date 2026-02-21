@@ -23,6 +23,7 @@ public class UpdateProcessor {
   private static final String MENU_CONST = "Споры в строительстве (для бизнеса)";
   private static final String MENU_CONTACT = "Связаться с юристом";
   private static final String DATA_LAST_MENU_AT = "last_menu_at";
+  private static final String PRIVACY_URL = "https://disk.yandex.ru/i/XCoJa306kaZgiQ";
 
   public UpdateProcessor(MaxApiClient client, ConversationStore store, Config config, ObjectMapper mapper) {
     this.client = client;
@@ -447,10 +448,9 @@ public class UpdateProcessor {
   }
 
   private void sendMainMenu(long userId) throws IOException {
-    String text = "Здравствуйте! Юрцентр «Де-факто» (Ставрополь).\n" +
-        "Подскажите, с каким вопросом помочь?\n" +
-        "Обычно достаточно 2–3 шагов, и юрист свяжется с вами.\n" +
-        "Если нужно сразу — нажмите «Связаться с юристом».";
+    String text = "Здравствуйте! 👋\n" +
+        "Вас приветствует юридический центр «Де‑Факто».\n" +
+        "Выберите интересующий вас вопрос ниже 👇";
     List<List<Button>> buttons = new ArrayList<>();
     buttons.add(List.of(Button.message("💰 " + MENU_TAX)));
     buttons.add(List.of(Button.message("🏗️ " + MENU_REPLAN)));
@@ -570,9 +570,9 @@ public class UpdateProcessor {
     String text = "Чтобы юрист подсказал по вашему случаю, оставьте номер телефона.\n" +
         "Мы на связи Пн–Пт 09:00–18:00.\n" +
         "Номер используется только для связи по вашему обращению.\n" +
-        "Отправляя номер, вы соглашаетесь на обработку персональных данных.";
+        "Отправляя номер, вы соглашаетесь на [политику конфиденциальности](" + PRIVACY_URL + ").";
     List<List<Button>> buttons = List.of(List.of(Button.message("📞 Оставить номер")));
-    client.sendMessage(c.userId, text, buttons);
+    client.sendMessage(c.userId, text, buttons, "markdown");
   }
 
   private void sendLeadTime(long userId) throws IOException {
