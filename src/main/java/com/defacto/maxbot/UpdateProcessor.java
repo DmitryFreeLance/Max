@@ -571,19 +571,19 @@ public class UpdateProcessor {
         "Мы на связи Пн–Пт 09:00–18:00.\n" +
         "Номер используется только для связи по вашему обращению.\n" +
         "Отправляя номер, вы соглашаетесь на [политику конфиденциальности](" + PRIVACY_URL + ").";
-    List<List<Button>> buttons = List.of(List.of(Button.message("📞 Оставить номер")));
+    List<List<Button>> buttons = withMenuButton(List.of(List.of(Button.message("📞 Оставить номер"))));
     client.sendMessage(c.userId, text, buttons, "markdown");
   }
 
   private void sendLeadTime(long userId) throws IOException {
     String text = "Когда удобнее связаться?\n" +
         "Выберите подходящий интервал.";
-    List<List<Button>> buttons = List.of(
+    List<List<Button>> buttons = withMenuButton(List.of(
         List.of(Button.message("🌅 Утром (09:00–12:00)")),
         List.of(Button.message("🌞 Днём (12:00–15:00)")),
         List.of(Button.message("🌆 Вечером (15:00–18:00)")),
         List.of(Button.message("✅ Не важно"))
-    );
+    ));
     client.sendMessage(userId, text, buttons);
   }
 
@@ -672,6 +672,12 @@ public class UpdateProcessor {
   private List<List<Button>> withContactButton(List<List<Button>> rows) {
     List<List<Button>> result = new ArrayList<>(rows);
     result.add(List.of(Button.message("👨‍⚖️ " + MENU_CONTACT)));
+    return withMenuButton(result);
+  }
+
+  private List<List<Button>> withMenuButton(List<List<Button>> rows) {
+    List<List<Button>> result = new ArrayList<>(rows);
+    result.add(List.of(Button.message("⬅️ В меню")));
     return result;
   }
 
